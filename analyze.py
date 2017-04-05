@@ -2,16 +2,16 @@
 import os
 import re
 import sys
-if __name__ == '__main__':
-    from log import *
-else:
-    import __main__
+
+if __name__ != '__main__':
+    import chuprotest.settings
+    settings = chuprotest.settings
 
 def pvs():
     success = True
     errors = list()
     if os.system("pvs-studio"):
-        log.writeln("PVS-Studio analis fail")
+        settings.log.writeln("PVS-Studio analis fail")
     else:
         os.system("plog-converter -a \"GA;OP;CS\" -d V2008,V525 -t tasklist -o pvs.tasks pvs.log > /dev/null")
         os.system("rm pvs.log")
@@ -34,7 +34,7 @@ def pvs():
     
 def analyse(gen):
     global index
-    fgen = open(path_to_gens+gen,"r", encoding="cp1251")
+    fgen = open(settings.path_to_gens+gen,"r", encoding="cp1251")
     strgen = str()
     index = list()
     longcomments = False
@@ -52,7 +52,7 @@ def analyse(gen):
         istrip = i.strip()
         if len(istrip) > 79 and istrip[:2] == "//" and not longcomments:
             longcomments = True
-            log.writeln("Комментарии длинее 79 символов")
+            settings.log.writeln("Комментарии длинее 79 символов")
         strnum += 1
     success = check_regex(strgen)
     return success
@@ -62,16 +62,8 @@ def check_regex(strgen):
     for i in list_of_patterns:
         for j in  re.finditer(i[0],strgen):
             success = False
-            log.writeln(str(index[j.start()][0]) + ':' + str(index[j.start()][1]) + ' ' + re.sub(wspace,'',j.group()) + '\t\t' + i[1])
+            settings.log.writeln(str(index[j.start()][0]) + ':' + str(index[j.start()][1]) + ' ' + re.sub(wspace,'',j.group()) + '\t\t' + i[1])
     return success
-
-def init_analyze():
-    global path_to_gens, path_to_lib, path_to_texlib, path_to_pdfdir, log
-    path_to_gens = __main__.path_to_gens
-    path_to_lib = __main__.path_to_lib
-    path_to_texlib = __main__.path_to_texlib
-    path_to_pdfdir = __main__.path_to_pdfdir
-    log = __main__.log
 
 def test_regex():
     tests = [
@@ -115,8 +107,8 @@ list_of_patterns = [
     ("_frac_" + lws + quotes + "*" + "2" + quotes + "*" + lws + "_frac", "для этого есть специальный тег _frac2"),
     ("_vf" + wspace + ";" + wspace + "sol" + lws + "podrob_", "podrob не может быть сразу после vf"),
     (upr+wspace+"\|", "Нужно вывести отдельным выражением"),
-    (tem_ + lws + quotes +" " +"|" + " " + quotes + lws + _tem , "tem не должна начинаться или заканчиваться пробелом"),
-    (tire + lws + quotes +" " +"|" + " " + quotes + lws + tire , "spec.tire расставляет свои пробелы"),
+    (tem_ + lws + quotes + " " + "|" + " " + quotes + lws + _tem , "tem не должна начинаться или заканчиваться пробелом"),
+    (tire + lws + quotes + " " + "|" + " " + quotes + lws + tire , "spec.tire расставляет свои пробелы"),
     # ("'(.){2,}'|''", "В ' должен быть ровно один символ")  not for regex
 ]
 

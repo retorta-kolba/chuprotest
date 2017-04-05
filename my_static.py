@@ -5,6 +5,13 @@ import __main__
 dict_list = {}
 warning = list()
 
+if __name__ == '__main__':
+    from log import *
+    import settings
+else:
+    import chuprotest.settings
+    settings = chuprotest.settings
+
 class Block:
     children = list()
     childrenNode = list()
@@ -217,14 +224,6 @@ def vid_count(inputstr):
         return len(vids)
     return 1
 
-def init_my_static():
-    global path_to_gens, path_to_lib, path_to_texlib, path_to_pdfdir, log
-    path_to_gens = __main__.path_to_gens
-    path_to_lib = __main__.path_to_lib
-    path_to_texlib = __main__.path_to_texlib
-    path_to_pdfdir = __main__.path_to_pdfdir
-    log = __main__.log    
-
 def vid_analysis(generator):
     global line_shift, warning, dict_list
     index = clang.cindex.Index.create()
@@ -237,9 +236,9 @@ def vid_analysis(generator):
     analysisfile.write("//clang header\n")
     line_shift = 3
     inputstr = str()
-    inputfile = open(path_to_gens+generator, 'r', encoding = 'cp1251')
+    inputfile = open(settings.path_to_gens+generator, 'r', encoding = 'cp1251')
     inputlist = list(inputfile)
-    inputparse = index.parse(path_to_gens+generator)
+    inputparse = index.parse(settings.path_to_gens+generator)
     currentstr = 1
     need_close_brace = False
     need_open_brace = False

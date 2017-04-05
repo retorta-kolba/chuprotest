@@ -2,10 +2,13 @@
 import subprocess
 import time
 import os
+
 if __name__ == '__main__':
     from log import *
+    import settings
 else:
-    import __main__
+    import chuprotest.settings
+    settings = chuprotest.settings
 
 
 def compile(gen):
@@ -14,31 +17,35 @@ def compile(gen):
     gen_main(gen, 100)
     # compile
     if os.system("g++-4.9 -std=c++11 -Wextra -Wpedantic -Wall"
-                 "  -fpermissive main.cpp 2> gcclog.txt "):
-        log.writeln("ОШИБКА компиляции")
+                 "  -fpermissive " + settings.path_to_main + 
+                 " -o " + settings.path_to_prog + " 2> gcclog.txt "):
+        settings.log.writeln("ОШИБКА компиляции")
         # ошибки компилятора
         gccinf = gcclog(gen)
         for i in gccinf:
-            log.writeln(i)
+            settings.log.writeln(i)
         return 0
     else:
-        log.writeln("Компиляция прошла успешно")
+        settings.log.writeln("Компиляция прошла успешно")
         # предупреждения компилятора
         gccinf = gcclog(gen)
         if len(gccinf) > 0:
-            log.writeln("ПРЕДУПРЕЖДЕНИЯ компилятора:")
+            settings.log.writeln("ПРЕДУПРЕЖДЕНИЯ компилятора:")
         for i in gccinf:
-            log.writeln(i)
-        subprocess.call(["./a.out > gz.tex"], shell=True)
-        subprocess.call(["enconv -x CP1251 -L ru gz.tex"], shell=True)
-        tex_success = os.system("pdflatex -output-directory=" + path_to_pdfdir +
-                         " --jobname=" + gen[:-2] + " " + path_to_texlib + " > /dev/null")
+            settings.log.writeln(i)
+        os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
+                  "./" + os.path.basename(settings.path_to_prog) + " > gz.tex")
+        os.system("enconv -x CP1251 -L ru gz.tex")
+        # TODO: timeout!!
+        tex_success = os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
+                                "pdflatex -output-directory=" + settings.path_to_pdfdir +
+                                " --jobname=" + gen[:-2] + " " + settings.path_to_texlib + " ")
         if tex_success == 0:
-            log.writeln("Сборка tex прошла успешно")
+            settings.log.writeln("Сборка tex прошла успешно")
         else:
-            log.writeln("Ошибки в сборке тех")
-        subprocess.call(["find  ./" + path_to_pdfdir + " \! -name \"*.pdf\""
-                         " -type f -delete"], shell=True)
+            settings.log.writeln("Ошибки в сборке тех")
+        os.system("find " + settings.path_to_pdfdir + " \! -name \"*.pdf\""
+                         " -type f -delete")
         return 1
 
 
@@ -55,19 +62,15 @@ def check_comments(gen):
     return findcomment, info
 
 
-def gen_main(matfiz, problems, **params):
-    global path_to_lib
-    PATH = "main.cpp"
-    if 'path' in params:
-        PATH = params['path'] + PATH
-    f = open(PATH, 'w')
+def gen_main(matfiz, problems):
+    f = open(settings.path_to_main, 'w')
     f.write("// This is a personal academic project. Dear PVS-Studio, please check it.\n")
     f.write("// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com\n\n")
     f.write("//сгенерировано автоматически с помощью compilelib.py\n\n")
     f.write("#define _LIB_LNXRTL_\n")
     f.write("#define __COMPIL_GCC__\n")
-    f.write("#include \""+path_to_lib+"\"\n")
-    f.write("#include \""+path_to_gens+"/"+matfiz+"\"\n\n")
+    f.write("#include \"" + settings.path_to_lib + "\"\n")
+    f.write("#include \"" + os.path.join(settings.path_to_gens, matfiz) + "\"\n\n")
     f.write("__GZ_MAIN__(psa)\n{\n")
     f.write("\tGZ_UTIL_DRAFTEST lim;\n")
     f.write("\tlim.test = 1000;\n")
@@ -94,7 +97,7 @@ def check_tex(mat):
 
 
 def find(mat, pattern):
-    f = open(path_to_gens+mat, 'r', encoding='cp1251')
+    f = open(settings.path_to_gens+mat, 'r', encoding='cp1251')
     for i in f:
         if pattern in i:
             return True
@@ -123,21 +126,4 @@ def gcclog(task):
                     gccinf.append(i)
                 break
     return gccinf
-
-
-def init_compilelib():
-    global path_to_gens, path_to_lib, path_to_texlib, path_to_pdfdir, log
-    path_to_gens = __main__.path_to_gens
-    path_to_lib = __main__.path_to_lib
-    path_to_texlib = __main__.path_to_texlib
-    path_to_pdfdir = __main__.path_to_pdfdir
-    log = __main__.log
-
-if __name__ == '__main__':
-    path_to_gens = "../new"
-    path_to_lib = "../../../lib/chupro.h"
-    path_to_texlib = "../tehno/chupro.tex"
-    path_to_pdfdir = "../pdf"
-    log = Log()
-
-    compile("fiz10122.h")
+    
