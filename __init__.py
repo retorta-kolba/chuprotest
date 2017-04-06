@@ -1,1 +1,1 @@
-__all__ = ['analyze', 'compilelib', 'log', 'my_static', 'settings']
+__all__ = ['analyze', 'compilelib', 'log', 'my_static', 'settings','pkg']
