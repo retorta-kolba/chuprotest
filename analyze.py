@@ -34,7 +34,7 @@ def pvs():
     
 def analyse(gen):
     global index
-    fgen = open(settings.path_to_gens+gen,"r", encoding="cp1251")
+    fgen = open(gen, "r", encoding="cp1251")
     strgen = str()
     index = list()
     longcomments = False

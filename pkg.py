@@ -2,8 +2,10 @@ import rarfile
 import os
 
 if __name__ != '__main__':
-    import chuprotest.settings
-    settings = chuprotest.settings
+    import chuprotest.settings as settings
+    import chuprotest.compilelib as compilelib
+    import chuprotest.analyze as analyse
+    #settings = chuprotest.settings
 
 # TODO: my_error
 def password(prog):
@@ -49,8 +51,29 @@ def cleandir(dirname):
     for i in files:
         os.remove(os.path.join(dirname, i))
 
+def testgen(gen):
+    settings.log.writeln()
+    settings.log.writeln(os.path.basename(gen))
+    settings.log.write_time()
+
+    if settings.make_compile:
+        compile_success = compilelib.compile(gen)
+        if compile_success and settings.make_tex:
+            tex_success = compilelib.compile_tex(gen)
+
+    if settings.make_comments:
+        findcomment, info = compilelib.check_comments(gen)
+        if findcomment:
+            settings.log.writeln(info)
+            
+    if settings.make_analyse:
+        analyse_success = analyse.analyse(gen)
+
 def test():
-    pass
+    for i in os.listdir(path=settings.path_to_gens):
+        path_to_gen = os.path.join(settings.path_to_gens, i)
+        if os.path.isfile(path_to_gen):
+            testgen(path_to_gen)
     
 def start(path_to_arx, prog):
     try:
@@ -59,4 +82,5 @@ def start(path_to_arx, prog):
         raise RuntimeError("Ошибка очистки директории")
     settings.log.cleandata()
     unrar(path_to_arx, prog)
-    
+    test()
+    return settings.log.data()

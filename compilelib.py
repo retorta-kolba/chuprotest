@@ -12,7 +12,6 @@ else:
 
 
 def compile(gen):
-    # print(gen)
     # main generation
     gen_main(gen, 100)
     # compile
@@ -35,19 +34,22 @@ def compile(gen):
             settings.log.writeln(i)
         os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
                   "./" + os.path.basename(settings.path_to_prog) + " > gz.tex")
-        os.system("enconv -x CP1251 -L ru gz.tex")
-        # TODO: timeout!!
-        tex_success = os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
-                                "pdflatex -output-directory=" + settings.path_to_pdfdir +
-                                " --jobname=" + gen[:-2] + " " + settings.path_to_texlib + " ")
-        if tex_success == 0:
-            settings.log.writeln("—борка tex прошла успешно")
-        else:
-            settings.log.writeln("ќшибки в сборке тех")
-        os.system("find " + settings.path_to_pdfdir + " \! -name \"*.pdf\""
-                         " -type f -delete")
         return 1
 
+def compile_tex(gen):
+    os.system("enconv -x CP1251 -L ru gz.tex")
+    # TODO: timeout check
+    tex_success = os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
+                            "timeout 5 pdflatex -output-directory=" + settings.path_to_pdfdir +
+                            " --jobname=" + os.path.basename(gen)[:-2] + " " + settings.path_to_texlib + 
+                            " > /dev/null")
+    if tex_success == 0:
+        settings.log.writeln("—борка tex прошла успешно")
+    else:
+        settings.log.writeln("ќшибки в сборке тех")
+    os.system("find " + settings.path_to_pdfdir + " \! -name \"*.pdf\""
+              " -type f -delete")
+    return 1
 
 def check_comments(gen):
     patterns = ["//z:", "//s:", "//re:"]
@@ -83,6 +85,7 @@ def gen_main(matfiz, problems):
 
 
 def check_tex(mat):
+    # TODO: fix path!!!
     errors = set()
     error = False
     tex = open("gz.tex", "r", encoding='cp1251')
@@ -97,7 +100,7 @@ def check_tex(mat):
 
 
 def find(mat, pattern):
-    f = open(settings.path_to_gens+mat, 'r', encoding='cp1251')
+    f = open(mat, 'r', encoding='cp1251')
     for i in f:
         if pattern in i:
             return True

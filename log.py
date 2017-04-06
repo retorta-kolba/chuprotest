@@ -25,7 +25,7 @@ class Log:
             self.set_file(log)
 
     def write(self, msg=""):
-        data += msg
+        self.__data += msg
         for log in self.__logs:
             log.write(msg)
 
