@@ -8,6 +8,7 @@ class Log:
     """
     __logsfile = list()
     __logs = list()
+    __data = str()
 
     def force_set_file(self, log):
         self.__logsfile.append(str(log))
@@ -23,15 +24,22 @@ class Log:
         else:
             self.set_file(log)
 
-    def write(self, str=""):
+    def write(self, msg=""):
+        data += msg
         for log in self.__logs:
-            log.write(str)
+            log.write(msg)
 
     def write_time(self):
         self.writeln(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
-    def writeln(self, str=""):
-        self.write(str+'\n')
+    def writeln(self, msg=""):
+        self.write(msg+'\n')
+    
+    def cleandata(self):
+        self.__data = str()
+
+    def data(self):
+        return self.__data
 
     def close_file(self):
         for log in self.__logs:
