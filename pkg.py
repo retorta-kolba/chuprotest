@@ -24,7 +24,7 @@ def password(prog):
 
 def unrar(path_to_arx, prog):
     try:
-        prog_pass = password("psa")
+        prog_pass = password(prog)
     except RuntimeError:
         raise
     except:
