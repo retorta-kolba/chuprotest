@@ -1,4 +1,3 @@
-# -*- coding: cp1251 -*-
 import subprocess
 import time
 import os
@@ -19,18 +18,18 @@ def compile(gen):
                  "  -fpermissive " + settings.path_to_main + 
                  " -o " + settings.path_to_prog + " 2> " +
                  settings.path_to_gcclog):
-        settings.log.writeln("ОШИБКА компиляции")
-        # ошибки компилятора
+        settings.log.writeln("РћРЁРР‘РљРђ РєРѕРјРїРёР»СЏС†РёРё")
+        # РѕС€РёР±РєРё РєРѕРјРїРёР»СЏС‚РѕСЂР°
         gccinf = gcclog(gen)
         for i in gccinf:
             settings.log.writeln(i)
         return 0
     else:
-        settings.log.writeln("Компиляция прошла успешно")
-        # предупреждения компилятора
+        settings.log.writeln("РљРѕРјРїРёР»СЏС†РёСЏ РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ")
+        # РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ РєРѕРјРїРёР»СЏС‚РѕСЂР°
         gccinf = gcclog(gen)
         if len(gccinf) > 0:
-            settings.log.writeln("ПРЕДУПРЕЖДЕНИЯ компилятора:")
+            settings.log.writeln("РџР Р•Р”РЈРџР Р•Р–Р”Р•РќРРЇ РєРѕРјРїРёР»СЏС‚РѕСЂР°:")
         for i in gccinf:
             settings.log.writeln(i)
         os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
@@ -45,9 +44,9 @@ def compile_tex(gen):
                             " --jobname=" + os.path.basename(gen)[:-2] + " " + settings.path_to_texlib + 
                             " > /dev/null")
     if tex_success == 0:
-        settings.log.writeln("Сборка tex прошла успешно")
+        settings.log.writeln("РЎР±РѕСЂРєР° tex РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ")
     else:
-        settings.log.writeln("Ошибки в сборке тех")
+        settings.log.writeln("РћС€РёР±РєРё РІ СЃР±РѕСЂРєРµ С‚РµС…")
     os.system("find " + settings.path_to_pdfdir + " \! -name \"*.pdf\""
               " -type f -delete")
     return 1
@@ -60,7 +59,7 @@ def check_comments(gen):
         if(find(gen, i)):
             if not findcomment:
                 findcomment = True
-                info += "найдено "
+                info += "РЅР°Р№РґРµРЅРѕ "
             info += i + " "
     return findcomment, info
 
@@ -69,7 +68,7 @@ def gen_main(matfiz, problems):
     f = open(settings.path_to_main, 'w')
     f.write("// This is a personal academic project. Dear PVS-Studio, please check it.\n")
     f.write("// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com\n\n")
-    f.write("//сгенерировано автоматически с помощью compilelib.py\n\n")
+    f.write("//СЃРіРµРЅРµСЂРёСЂРѕРІР°РЅРѕ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё СЃ РїРѕРјРѕС‰СЊСЋ compilelib.py\n\n")
     f.write("#define _LIB_LNXRTL_\n")
     f.write("#define __COMPIL_GCC__\n")
     f.write("#include \"" + settings.path_to_lib + "\"\n")

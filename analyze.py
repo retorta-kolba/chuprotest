@@ -52,7 +52,7 @@ def analyse(gen):
         istrip = i.strip()
         if len(istrip) > 79 and istrip[:2] == "//" and not longcomments:
             longcomments = True
-            settings.log.writeln("Комментарии длинее 79 символов")
+            settings.log.writeln("РљРѕРјРјРµРЅС‚Р°СЂРёРё РґР»РёРЅРµРµ 79 СЃРёРјРІРѕР»РѕРІ")
         strnum += 1
     success = check_regex(strgen)
     return success
@@ -70,12 +70,12 @@ def test_regex():
         "rusogl | tem12345_|'a'",
         "'a'|  'a'",
         "up_|'2'|_up",
-        "Привет.\"|_sf",
+        "РџСЂРёРІРµС‚.\"|_sf",
         "','|_sf",
         "task|tem12345_|\"s\"|_tem",
         "_vf;\nsol | podrob_",
-        "task|bhs_ | \"Какой-то текст условия\"",
-        "tem12345_|\" важный квант \" |_tem",
+        "task|bhs_ | \"РљР°РєРѕР№-С‚Рѕ С‚РµРєСЃС‚ СѓСЃР»РѕРІРёСЏ\"",
+        "tem12345_|\" РІР°Р¶РЅС‹Р№ РєРІР°РЅС‚ \" |_tem",
         "spec.tire|\' "
         ]
     for i in tests:
@@ -97,19 +97,19 @@ tem = "(" + tem_ + "|" + _tem + ")"
 tire = "spec\.tire"
 
 list_of_patterns = [
-    (quotes+wspace+"\|"+wspace+quotes, "Объединить в одну строку"),  # "|'
-    (lws + symbolindquote + wspace + "(\||;)", "Символ добавлять быстрее"),  # |"a"
-    ("(" + vidn + "(\s|\|\|)*){6,}", "vidin+list"),  # слишком длинный список видов
-    ("rusogl" + lws + "tem",  "rusogl не работает через tem"),
-    ("(\.|,)" + wspace + quotes + lws + "_sf", "точка/запятая не должны быть в sf"),  # ."|_sf
-    ("up_" + lws + quotes + "*" + "(2|3)" + quotes + "*" + lws + "_up", "для этого есть специальный тег upx"),
-    ("down_" + lws + quotes + "*" + "(0|1|2)" + quotes + "*" + lws + "_down", "для этого есть специальный тег downx"),
-    ("_frac_" + lws + quotes + "*" + "2" + quotes + "*" + lws + "_frac", "для этого есть специальный тег _frac2"),
-    ("_vf" + wspace + ";" + wspace + "sol" + lws + "podrob_", "podrob не может быть сразу после vf"),
-    (upr+wspace+"\|", "Нужно вывести отдельным выражением"),
-    (tem_ + lws + quotes + " " + "|" + " " + quotes + lws + _tem , "tem не должна начинаться или заканчиваться пробелом"),
-    (tire + lws + quotes + " " + "|" + " " + quotes + lws + tire , "spec.tire расставляет свои пробелы"),
-    # ("'(.){2,}'|''", "В ' должен быть ровно один символ")  not for regex
+    (quotes+wspace+"\|"+wspace+quotes, "РћР±СЉРµРґРёРЅРёС‚СЊ РІ РѕРґРЅСѓ СЃС‚СЂРѕРєСѓ"),  # "|'
+    (lws + symbolindquote + wspace + "(\||;)", "РЎРёРјРІРѕР» РґРѕР±Р°РІР»СЏС‚СЊ Р±С‹СЃС‚СЂРµРµ"),  # |"a"
+    ("(" + vidn + "(\s|\|\|)*){6,}", "vidin+list"),  # СЃР»РёС€РєРѕРј РґР»РёРЅРЅС‹Р№ СЃРїРёСЃРѕРє РІРёРґРѕРІ
+    ("rusogl" + lws + "tem",  "rusogl РЅРµ СЂР°Р±РѕС‚Р°РµС‚ С‡РµСЂРµР· tem"),
+    ("(\.|,)" + wspace + quotes + lws + "_sf", "С‚РѕС‡РєР°/Р·Р°РїСЏС‚Р°СЏ РЅРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ sf"),  # ."|_sf
+    ("up_" + lws + quotes + "*" + "(2|3)" + quotes + "*" + lws + "_up", "РґР»СЏ СЌС‚РѕРіРѕ РµСЃС‚СЊ СЃРїРµС†РёР°Р»СЊРЅС‹Р№ С‚РµРі upx"),
+    ("down_" + lws + quotes + "*" + "(0|1|2)" + quotes + "*" + lws + "_down", "РґР»СЏ СЌС‚РѕРіРѕ РµСЃС‚СЊ СЃРїРµС†РёР°Р»СЊРЅС‹Р№ С‚РµРі downx"),
+    ("_frac_" + lws + quotes + "*" + "2" + quotes + "*" + lws + "_frac", "РґР»СЏ СЌС‚РѕРіРѕ РµСЃС‚СЊ СЃРїРµС†РёР°Р»СЊРЅС‹Р№ С‚РµРі _frac2"),
+    ("_vf" + wspace + ";" + wspace + "sol" + lws + "podrob_", "podrob РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ СЃСЂР°Р·Сѓ РїРѕСЃР»Рµ vf"),
+    (upr+wspace+"\|", "РќСѓР¶РЅРѕ РІС‹РІРµСЃС‚Рё РѕС‚РґРµР»СЊРЅС‹Рј РІС‹СЂР°Р¶РµРЅРёРµРј"),
+    (tem_ + lws + quotes + " " + "|" + " " + quotes + lws + _tem , "tem РЅРµ РґРѕР»Р¶РЅР° РЅР°С‡РёРЅР°С‚СЊСЃСЏ РёР»Рё Р·Р°РєР°РЅС‡РёРІР°С‚СЊСЃСЏ РїСЂРѕР±РµР»РѕРј"),
+    (tire + lws + quotes + " " + "|" + " " + quotes + lws + tire , "spec.tire СЂР°СЃСЃС‚Р°РІР»СЏРµС‚ СЃРІРѕРё РїСЂРѕР±РµР»С‹"),
+    # ("'(.){2,}'|''", "Р’ ' РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ СЂРѕРІРЅРѕ РѕРґРёРЅ СЃРёРјРІРѕР»")  not for regex
 ]
 
 if __name__ == '__main__':
