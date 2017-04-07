@@ -1,4 +1,3 @@
-# -*- coding: cp1251 -*-
 import os
 import re
 import sys
