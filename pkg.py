@@ -1,5 +1,6 @@
 import rarfile
 import os
+import re
 
 if __name__ != '__main__':
     import chuprotest.settings as settings
@@ -70,11 +71,16 @@ def testgen(gen):
         analyse_success = analyse.analyse(gen)
 
 def test():
-    for i in os.listdir(path=settings.path_to_gens):
+    gens = os.listdir(path=settings.path_to_gens)
+    tasks = list()
+    for i in gens:
         path_to_gen = os.path.join(settings.path_to_gens, i)
-        if os.path.isfile(path_to_gen):
+        if os.path.isfile(path_to_gen) and re.match(r"[a-z]{3}\d{5}\.h", i) and len(i) == 10:
+            tasks.append(i)
             testgen(path_to_gen)
-    
+        else:
+            settings.log.writeln(i+" проигнорировано")
+    return tasks
 def start(path_to_arx, prog):
     try:
         cleandir(settings.path_to_gens)
@@ -82,5 +88,5 @@ def start(path_to_arx, prog):
         raise RuntimeError("Ошибка очистки директории")
     settings.log.cleandata()
     unrar(path_to_arx, prog)
-    test()
-    return settings.log.data()
+    tasks = test()
+    return settings.log.data(), tasks

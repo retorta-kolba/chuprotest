@@ -17,7 +17,8 @@ def compile(gen):
     # compile
     if os.system("g++-4.9 -std=c++11 -Wextra -Wpedantic -Wall"
                  "  -fpermissive " + settings.path_to_main + 
-                 " -o " + settings.path_to_prog + " 2> gcclog.txt "):
+                 " -o " + settings.path_to_prog + " 2> " +
+                 settings.path_to_gcclog):
         settings.log.writeln("ОШИБКА компиляции")
         # ошибки компилятора
         gccinf = gcclog(gen)
@@ -33,12 +34,12 @@ def compile(gen):
         for i in gccinf:
             settings.log.writeln(i)
         os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
-                  "./" + os.path.basename(settings.path_to_prog) + " > gz.tex")
+                  "./" + os.path.basename(settings.path_to_prog) + " > " + 
+                  settings.path_to_gztex)
         return 1
 
 def compile_tex(gen):
-    os.system("enconv -x CP1251 -L ru gz.tex")
-    # TODO: timeout check
+    os.system("enconv -x CP1251 -L ru "+settings.path_to_gztex)
     tex_success = os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
                             "timeout 5 pdflatex -output-directory=" + settings.path_to_pdfdir +
                             " --jobname=" + os.path.basename(gen)[:-2] + " " + settings.path_to_texlib + 
@@ -85,10 +86,9 @@ def gen_main(matfiz, problems):
 
 
 def check_tex(mat):
-    # TODO: fix path!!!
     errors = set()
     error = False
-    tex = open("gz.tex", "r", encoding='cp1251')
+    tex = open(settings.path_to_gztex, "r", encoding='cp1251')
     for i in tex:
         if "ERRORS" in i:
             error = True
@@ -108,16 +108,16 @@ def find(mat, pattern):
 
 
 def gcclog(task):
-    glog = open("gcclog.txt", "rb")
+    glog = open(settings.path_to_gcclog, "rb")
     good = (task, "error")
-    ignore = ("note: in expansion of macro \\xe2\\x80\\x98__GZ3__",
-              " In static member function \\xe2\\x80\\x98static void _GZ_",
-              "warning: suggest parentheses around arithmetic in operand of \\xe2\\x80\\x98|\\xe2\\x80\\x99",
-              "required from here\\n"
+    ignore = ("note: in expansion of macro __GZ3__",
+              " In static member function static void _GZ_",
+              "warning: suggest parentheses around arithmetic in operand of |",
+              "required from here"
               )
     gccinf = list()
     for i in glog:
-        i = str(i)
+        i = str(i).replace("\\xe2","").replace("\\x80","").replace("\\x98","").replace("\\x99","")[2:-3]
         for kw in good:
             if kw in i:
 

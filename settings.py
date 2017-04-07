@@ -15,15 +15,17 @@ def add(name, init_dict, default, **args):
     
 def init(init_dict={}):
     global log
-    
-    add('path_to_gens', init_dict, os.path.join(os.path.expanduser("~"), "test/new/"), path=True)
-    add('path_to_lib', init_dict, os.path.join(os.path.expanduser("~"), "test/lib/chupro.h"), path=True)
-    add('path_to_texlib', init_dict, os.path.join(os.path.expanduser("~"), "test/tehno/chupro.tex"), path=True)
-    add('path_to_pdfdir', init_dict, os.path.join(os.path.expanduser("~"), "test/pdf/"), path=True)
-    add('logdir', init_dict, os.path.join(os.path.expanduser("~"), "test/log/"), path=True)
-    add('path_to_main', init_dict, os.path.join(os.path.expanduser("~"), "test/main.cpp"), path=True)
-    add('path_to_prog', init_dict, os.path.join(os.path.expanduser("~"), "test/a.out"), path=True)
-    add('path_to_pass', init_dict, os.path.join(os.path.expanduser("~"), "test/pass/pass.txt"), path=True)
+    home = os.path.expanduser("~")
+    add('path_to_gens', init_dict, os.path.join(home, "test/new/"), path=True)
+    add('path_to_lib', init_dict, os.path.join(home, "test/lib/chupro.h"), path=True)
+    add('path_to_texlib', init_dict, os.path.join(home, "test/tehno/chupro.tex"), path=True)
+    add('path_to_pdfdir', init_dict, os.path.join(home, "test/pdf/"), path=True)
+    add('logdir', init_dict, os.path.join(home, "test/log/"), path=True)
+    add('path_to_main', init_dict, os.path.join(home, "test/main.cpp"), path=True)
+    add('path_to_prog', init_dict, os.path.join(home, "test/a.out"), path=True)
+    add('path_to_pass', init_dict, os.path.join(home, "test/pass/pass.txt"), path=True)
+    add('path_to_gcclog', init_dict, os.path.join(home, "test/gcclog.txt"), path=True)
+    add('path_to_gztex', init_dict, os.path.join(home, "test/gz.tex"), path=True)
     add('make_pvs', init_dict, False)
     add('make_compile', init_dict, True)
     add('make_tex', init_dict, True)
