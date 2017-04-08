@@ -65,7 +65,7 @@ def check_comments(gen):
 
 
 def gen_main(matfiz, problems):
-    f = open(settings.path_to_main, 'w')
+    f = open(settings.path_to_main, 'w', encoding='utf-8')
     f.write("// This is a personal academic project. Dear PVS-Studio, please check it.\n")
     f.write("// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com\n\n")
     f.write("//сгенерировано автоматически с помощью compilelib.py\n\n")
@@ -121,7 +121,6 @@ def gcclog(task):
             if kw in i:
 
                 for bw in ignore:
-                    # print(bw, i, bw in i) 
                     if bw in i:
                         break
                 else:

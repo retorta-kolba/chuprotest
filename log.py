@@ -1,4 +1,3 @@
-# -*- coding: cp1251 -*-
 import time
 
 
@@ -16,7 +15,7 @@ class Log:
 
     def set_file(self, logfile="log.txt"):
         self.__logsfile.append(logfile)
-        self.__logs.append(open(logfile, 'a', encoding='cp1251'))
+        self.__logs.append(open(logfile, 'a', encoding='utf-8'))
 
     def __init__(self, log="log.txt", forceset=False):
         if forceset:
