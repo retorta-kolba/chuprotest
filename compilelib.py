@@ -121,7 +121,7 @@ def gcclog(task):
             if kw in i:
 
                 for bw in ignore:
-                    if bw in i:
+                    if bw in i.replace('\'',''):
                         break
                 else:
                     gccinf.append(i)
