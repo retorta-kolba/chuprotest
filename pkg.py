@@ -64,7 +64,7 @@ def testgen(gen):
             if tex_success:
                 error_tex, errors_tex_list = compilelib.check_tex()
                 if error_tex:
-                    log.writeln("Есть ОШИБКИ tex:")
+                    settings.log.writeln("Есть ОШИБКИ tex:")
                 for i in errors_tex_list:
                     i = i.strip()
                     if len(i)>0:
