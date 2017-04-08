@@ -85,7 +85,7 @@ def gen_main(matfiz, problems):
     f.write("\tgz_util_draftest(lim);\n}\n")
 
 
-def check_tex(mat):
+def check_tex():
     errors = set()
     error = False
     tex = open(settings.path_to_gztex, "r", encoding='cp1251')

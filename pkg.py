@@ -61,6 +61,15 @@ def testgen(gen):
         compile_success = compilelib.compile(gen)
         if compile_success and settings.make_tex:
             tex_success = compilelib.compile_tex(gen)
+            if tex_success:
+                error_tex, errors_tex_list = compilelib.check_tex()
+                if error_tex:
+                    log.writeln("Есть ОШИБКИ tex:")
+                for i in errors_tex_list:
+                    i = i.strip()
+                    if len(i)>0:
+                        settings.log.writeln(i)
+                        
 
     if settings.make_comments:
         findcomment, info = compilelib.check_comments(gen)
@@ -77,7 +86,10 @@ def test():
         path_to_gen = os.path.join(settings.path_to_gens, i)
         if os.path.isfile(path_to_gen) and re.match(r"[a-z]{3}\d{5}\.h", i) and len(i) == 10:
             tasks.append(i)
-            testgen(path_to_gen)
+            try:
+                testgen(path_to_gen)
+            except:
+                settings.log.writeln("произошла ошибка при проверке " + i)
         else:
             settings.log.writeln(i+" проигнорировано")
     return tasks
