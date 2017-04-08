@@ -34,7 +34,7 @@ def init(init_dict={}):
     add('make_static', init_dict, False)
 
     os.makedirs(os.path.dirname(logdir), exist_ok=True)
-    log = Log()
+    log = Log(os.path.join(logdir, "log.txt"))
     log.set_file(os.path.join(logdir, ".log.txt"))
 
 init()
