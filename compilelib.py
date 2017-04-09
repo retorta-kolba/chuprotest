@@ -33,7 +33,7 @@ def compile(gen):
         for i in gccinf:
             settings.log.writeln(i)
         os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
-                  "./" + os.path.basename(settings.path_to_prog) + " > " + 
+                  "timeout 10 ./" + os.path.basename(settings.path_to_prog) + " > " + 
                   settings.path_to_gztex)
         return 1
 
