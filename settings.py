@@ -14,7 +14,8 @@ def add(name, init_dict, default, **args):
             os.makedirs(os.path.dirname(globals()[name]), exist_ok=True)
     
 def init(init_dict={}):
-    global log
+    global log, already_init
+    already_init = True
     home = os.path.expanduser("~")
     add('path_to_gens', init_dict, os.path.join(home, "test/new/"), path=True)
     add('path_to_lib', init_dict, os.path.join(home, "test/lib/chupro.h"), path=True)
@@ -37,4 +38,7 @@ def init(init_dict={}):
     log = Log(os.path.join(logdir, "log.txt"))
     log.set_file(os.path.join(logdir, ".log.txt"))
 
-init()
+def default_init():
+    if not already_init:
+        init()
+already_init = False

@@ -6,7 +6,6 @@ if __name__ != '__main__':
     import chuprotest.settings as settings
     import chuprotest.compilelib as compilelib
     import chuprotest.analyze as analyse
-    #settings = chuprotest.settings
 
 # TODO: my_error
 def password(prog):
@@ -53,6 +52,7 @@ def cleandir(dirname):
         os.remove(os.path.join(dirname, i))
 
 def testgen(gen):
+    settings.default_init()
     settings.log.writeln()
     settings.log.writeln(os.path.basename(gen))
     settings.log.write_time()
@@ -80,7 +80,8 @@ def testgen(gen):
         analyse_success = analyse.analyse(gen)
 
 def test():
-    gens = os.listdir(path=settings.path_to_gens)
+    settings.default_init()
+    gens = [i for i in os.listdir(path=settings.path_to_gens) if os.path.isfile(os.path.join(settings.path_to_gens, i))]
     tasks = list()
     for i in gens:
         path_to_gen = os.path.join(settings.path_to_gens, i)
@@ -93,7 +94,9 @@ def test():
         else:
             settings.log.writeln(i+" проигнорировано")
     return tasks
+
 def start(path_to_arx, prog):
+    settings.default_init()
     try:
         cleandir(settings.path_to_gens)
     except:

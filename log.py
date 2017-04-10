@@ -17,11 +17,12 @@ class Log:
         self.__logsfile.append(logfile)
         self.__logs.append(open(logfile, 'a', 1, encoding='utf-8'))
 
-    def __init__(self, log="log.txt", forceset=False):
-        if forceset:
-            self.force_set_file(log)
-        else:
-            self.set_file(log)
+    def __init__(self, log=None, forceset=False):
+        if not log is None:
+            if forceset:
+                self.force_set_file(log)
+            else:
+                self.set_file(log)
 
     def write(self, msg=""):
         self.__data += msg
