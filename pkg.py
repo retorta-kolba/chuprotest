@@ -6,6 +6,7 @@ if __name__ != '__main__':
     import chuprotest.settings as settings
     import chuprotest.compilelib as compilelib
     import chuprotest.analyze as analyse
+    import chuprotest.helper as helper
 
 # TODO: my_error
 def password(prog):
@@ -86,7 +87,11 @@ def test():
     for i in gens:
         path_to_gen = os.path.join(settings.path_to_gens, i)
         if os.path.isfile(path_to_gen) and re.match(r"[a-z]{3}\d{5}\.h", i) and len(i) == 10:
-            tasks.append(i)
+            try:
+                metid = helper.getmetid(path_to_gen)
+            except:
+                metid = None
+            tasks.append((i.split('.')[0],metid))
             try:
                 testgen(path_to_gen)
             except:
