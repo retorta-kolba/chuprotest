@@ -97,7 +97,7 @@ def test():
             except:
                 settings.log.writeln("произошла ошибка при проверке " + i)
         else:
-            settings.log.writeln(i+" проигнорировано")
+            settings.log.writeln(i + " проигнорировано")
     return tasks
 
 def start(path_to_arx, prog):
