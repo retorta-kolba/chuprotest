@@ -26,14 +26,19 @@ def init(init_dict={}):
     add('path_to_prog', init_dict, os.path.join(home, "test/a.out"), path=True)
     add('path_to_pass', init_dict, os.path.join(home, "test/pass/pass.txt"), path=True)
     add('path_to_gcclog', init_dict, os.path.join(home, "test/gcclog.txt"), path=True)
+    add('path_to_cllog', init_dict, os.path.join(home, "test/cllog.txt"), path=True)
     add('path_to_gztex', init_dict, os.path.join(home, "test/gz.tex"), path=True)
+    add('path_to_cl', init_dict, os.path.join(home, "test/testwin/VC/bin/cl.exe"), path=True)
+    add('path_to_testwin', init_dict, os.path.join(home, 'test/testwin/'), path=True)
     add('make_pvs', init_dict, False)
-    add('make_compile', init_dict, True)
+    add('make_compilegcc', init_dict, True)
+    add('make_compilecl', init_dict, True)
     add('make_tex', init_dict, True)
     add('make_comments', init_dict, True)
     add('make_analyse', init_dict, True)
     add('make_static', init_dict, False)
-
+    
+    
     os.makedirs(os.path.dirname(logdir), exist_ok=True)
     log = Log(os.path.join(logdir, "log.txt"))
     log.set_file(os.path.join(logdir, ".log.txt"))

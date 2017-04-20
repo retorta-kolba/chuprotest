@@ -10,32 +10,41 @@ else:
     settings = chuprotest.settings
 
 
-def compile(gen):
+def compilegcc(gen):
     # main generation
     gen_main(gen, 100)
     # compile
-    if os.system("g++-4.9 -std=c++11 -Wextra -Wpedantic -Wall"
+    code = os.system("g++-4.9 -std=c++11 -Wextra -Wpedantic -Wall"
                  "  -fpermissive " + settings.path_to_main + 
                  " -o " + settings.path_to_prog + " 2> " +
-                 settings.path_to_gcclog):
-        settings.log.writeln("ОШИБКА компиляции")
+                 settings.path_to_gcclog)
+    if code:
+        settings.log.writeln("ОШИБКА компиляции gcc")
         # ошибки компилятора
         gccinf = gcclog(gen)
         for i in gccinf:
             settings.log.writeln(i)
-        return 0
     else:
-        settings.log.writeln("Компиляция прошла успешно")
+        #settings.log.writeln("Компиляция gcc прошла успешно")
         # предупреждения компилятора
         gccinf = gcclog(gen)
         if len(gccinf) > 0:
-            settings.log.writeln("ПРЕДУПРЕЖДЕНИЯ компилятора:")
+            settings.log.writeln("ПРЕДУПРЕЖДЕНИЯ gcc:")
         for i in gccinf:
             settings.log.writeln(i)
         os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
                   "timeout 10 ./" + os.path.basename(settings.path_to_prog) + " > " + 
                   settings.path_to_gztex)
-        return 1
+    return code
+
+def compilecl(gen):
+    gen_main(gen, 100, False, False)  # mvcc + win
+    code = os.system("export TESTWIN=\"" + settings.path_to_testwin + "\" && "
+              "export INCLUDE=\"$TESTWIN/VC/include;$TESTWIN/win8sdk/Include/shared/;$TESTWIN/win8sdk/Include/um/;$TESTWIN/win8sdk/Include/winrt/;$TESTWIN/10/Include/10.0.10150.0/ucrt/\" && "
+              "export LIB=\"$TESTWIN/VC/lib;$TESTWIN/win8sdk/Lib/winv6.3/um/x86;$TESTWIN/10/Lib/ucrt/x86\" && "
+              "wine " + settings.path_to_cl + " /EHsc /Wall /W4 z:" + settings.path_to_main + " 2> /dev/null "
+              " | enconv > " + settings.path_to_cllog)
+    return code
 
 def compile_tex(gen):
     os.system("enconv -x CP1251 -L ru "+settings.path_to_gztex)
@@ -65,13 +74,19 @@ def check_comments(gen):
     return findcomment, info
 
 
-def gen_main(matfiz, problems):
+def gen_main(matfiz, problems, gcc=True, lnx=True):
     f = open(settings.path_to_main, 'w', encoding='utf-8')
     f.write("// This is a personal academic project. Dear PVS-Studio, please check it.\n")
     f.write("// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com\n\n")
     f.write("// сгенерировано автоматически с помощью compilelib.py\n\n")
-    f.write("#define _LIB_LNXRTL_\n")
-    f.write("#define __COMPIL_GCC__\n")
+    if lnx:
+        f.write("#define _LIB_LNXRTL_\n")
+    else:
+        f.write("#define _LIB_WINRTL_\n")
+    if gcc:
+        f.write("#define __COMPIL_GCC__\n")
+    else:
+        f.write("#define __COMPIL_MSVS__\n")
     f.write("#include \"" + settings.path_to_lib + "\"\n")
     f.write("#include \"" + matfiz + "\"\n\n")
     f.write("__GZ_MAIN__(psa)\n{\n")
@@ -106,6 +121,13 @@ def find(mat, pattern):
             return True
     return False
 
+def cllog(task):
+    clog = open(settings.path_to_cllog, 'r', encoding='utf-8')
+    clinf = list()
+    for i in clog:
+        if task in i:
+            clinf.append(i.replace('\n',''))
+    return clinf
 
 def gcclog(task):
     glog = open(settings.path_to_gcclog, "rb")

@@ -57,20 +57,37 @@ def testgen(gen):
     settings.log.writeln()
     settings.log.writeln(os.path.basename(gen))
     settings.log.write_time()
+    compile_success = True
+    
+    if settings.make_compilecl:
+        cl_error = compilelib.compilecl(gen)
+        if cl_error:
+            compile_success = False
+            settings.log.writeln("ОШИБКА компиляции msvs")
+        out = compilelib.cllog(gen)
+        if len(out) > 0:
+            settings.log.writeln("ПРЕДУПРЕЖДЕНИЯ msvs:")
+            for i in out:
+                settings.log.writeln(i)
 
-    if settings.make_compile:
-        compile_success = compilelib.compile(gen)
-        if compile_success and settings.make_tex:
-            tex_success = compilelib.compile_tex(gen)
-            if tex_success:
-                error_tex, errors_tex_list = compilelib.check_tex()
-                if error_tex:
-                    settings.log.writeln("Есть ОШИБКИ tex:")
-                for i in errors_tex_list:
-                    i = i.strip()
-                    if len(i)>0:
-                        settings.log.writeln(i)
-                        
+    if settings.make_compilegcc:
+        gcc_error = compilelib.compilegcc(gen)
+        if gcc_error:
+            compile_success = False
+    
+    if (settings.make_compilegcc or settings.make_compilecl) and compile_success:
+        settings.log.writeln("Компиляция прошла успешно")
+
+    if settings.make_compilegcc and not gcc_error and settings.make_tex:
+        tex_success = compilelib.compile_tex(gen)
+        if tex_success:
+            error_tex, errors_tex_list = compilelib.check_tex()
+            if error_tex:
+                settings.log.writeln("Есть ОШИБКИ tex:")
+            for i in errors_tex_list:
+                i = i.strip()
+                if len(i)>0:
+                    settings.log.writeln(i)
 
     if settings.make_comments:
         findcomment, info = compilelib.check_comments(gen)
