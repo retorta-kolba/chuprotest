@@ -6,13 +6,15 @@ if __name__ != '__main__':
     import chuprotest.settings
     settings = chuprotest.settings
 
+
 def pvs():
     success = True
     errors = list()
     if os.system("pvs-studio"):
         settings.log.writeln("PVS-Studio analis fail")
     else:
-        os.system("plog-converter -a \"GA;OP;CS\" -d V2008,V525 -t tasklist -o pvs.tasks pvs.log > /dev/null")
+        os.system(
+            "plog-converter -a \"GA;OP;CS\" -d V2008,V525 -t tasklist -o pvs.tasks pvs.log > /dev/null")
         os.system("rm pvs.log")
         pvstasks = open("pvs.tasks", "r", encoding="cp1251")
         ignorepvs = (
@@ -30,7 +32,8 @@ def pvs():
                 success = False
                 errors.append(i.strip())
     return success, errors
-    
+
+
 def analyse(gen):
     global index
     fgen = open(gen, "r", encoding="cp1251")
@@ -42,12 +45,12 @@ def analyse(gen):
     for i in fgen:
         symnum = 1
         for j in i:
-            index.append((strnum,symnum))
+            index.append((strnum, symnum))
             if j == '\t':
                 symnum += 4
             else:
                 symnum += 1
-        strgen+=i
+        strgen += i
         istrip = i.strip()
         if len(istrip) > 79 and istrip[:2] == "//" and not longcomments:
             longcomments = True
@@ -56,13 +59,16 @@ def analyse(gen):
     success = check_regex(strgen)
     return success
 
+
 def check_regex(strgen):
     success = True
     for i in list_of_patterns:
-        for j in  re.finditer(i[0],strgen):
+        for j in re.finditer(i[0], strgen):
             success = False
-            settings.log.writeln(str(index[j.start()][0]) + ':' + str(index[j.start()][1]) + ' ' + re.sub(wspace,'',j.group()) + '\t\t' + i[1])
+            settings.log.writeln(str(index[j.start()][0]) + ':' + str(
+                index[j.start()][1]) + ' ' + re.sub(wspace, '', j.group()) + '\t\t' + i[1])
     return success
+
 
 def test_regex():
     tests = [
@@ -76,19 +82,21 @@ def test_regex():
         "task|bhs_ | \"Какой-то текст условия\"",
         "tem12345_|\" важный квант \" |_tem",
         "spec.tire|\' "
-        ]
+    ]
     for i in tests:
         print(i)
         for j in list_of_patterns:
-            for k in re.finditer(j[0],i):
-                print('\t' + str(k.start()) + '\t' + re.sub(wspace,'',k.group()) + '\t\t' + j[1])
+            for k in re.finditer(j[0], i):
+                print('\t' + str(k.start()) + '\t' +
+                      re.sub(wspace, '', k.group()) + '\t\t' + j[1])
         print()
-    
+
+
 wspace = "\s*"
-quotes = "(\'|\")" # ",'
-symbolindquote = "\".\"" # "a"
+quotes = "(\'|\")"  # ",'
+symbolindquote = "\".\""  # "a"
 lws = wspace + "\|" + wspace
-vidn = "vid"+wspace+"=="+wspace+"\d+"
+vidn = "vid" + wspace + "==" + wspace + "\d+"
 upr = "(bhs_|_bhs_|_bhs|abzac|podrob_|_podrob)"
 tem_ = "(tem([0-9]){5}_)"
 _tem = "_tem"
@@ -96,18 +104,26 @@ tem = "(" + tem_ + "|" + _tem + ")"
 tire = "spec\.tire"
 
 list_of_patterns = [
-    (quotes+wspace+"\|"+wspace+quotes, "Объединить в одну строку"),  # "|'
+    (quotes + wspace + "\|" + wspace + quotes, "Объединить в одну строку"),  # "|'
     (lws + symbolindquote + wspace + "(\||;)", "Символ добавлять быстрее"),  # |"a"
-    ("(" + vidn + "(\s|\|\|)*){6,}", "vidin+list"),  # слишком длинный список видов
-    ("rusogl" + lws + "tem",  "rusogl не работает через tem"),
-    ("(\.|,)" + wspace + quotes + lws + "_sf", "точка/запятая не должны быть в sf"),  # ."|_sf
-    ("up_" + lws + quotes + "*" + "(2|3)" + quotes + "*" + lws + "_up", "для этого есть специальный тег upx"),
-    ("down_" + lws + quotes + "*" + "(0|1|2)" + quotes + "*" + lws + "_down", "для этого есть специальный тег downx"),
-    ("_frac_" + lws + quotes + "*" + "2" + quotes + "*" + lws + "_frac", "для этого есть специальный тег _frac2"),
-    ("_vf" + wspace + ";" + wspace + "sol" + lws + "podrob_", "podrob не может быть сразу после vf"),
-    (upr+wspace+"\|", "Нужно вывести отдельным выражением"),
-    (tem_ + lws + quotes + " " + "|" + " " + quotes + lws + _tem , "tem не должна начинаться или заканчиваться пробелом"),
-    (tire + lws + quotes + " " + "|" + " " + quotes + lws + tire , "spec.tire расставляет свои пробелы"),
+    # слишком длинный список видов
+    ("(" + vidn + "(\s|\|\|)*){6,}", "vidin+list"),
+    ("rusogl" + lws + "tem", "rusogl не работает через tem"),
+    ("(\.|,)" + wspace + quotes + lws + "_sf",
+     "точка/запятая не должны быть в sf"),  # ."|_sf
+    ("up_" + lws + quotes + "*" + "(2|3)" + quotes + "*" + \
+     lws + "_up", "для этого есть специальный тег upx"),
+    ("down_" + lws + quotes + "*" + "(0|1|2)" + quotes + "*" + \
+     lws + "_down", "для этого есть специальный тег downx"),
+    ("_frac_" + lws + quotes + "*" + "2" + quotes + "*" + \
+     lws + "_frac", "для этого есть специальный тег _frac2"),
+    ("_vf" + wspace + ";" + wspace + "sol" + lws + \
+     "podrob_", "podrob не может быть сразу после vf"),
+    (upr + wspace + "\|", "Нужно вывести отдельным выражением"),
+    (tem_ + lws + quotes + " " + "|" + " " + quotes + lws + _tem,
+     "tem не должна начинаться или заканчиваться пробелом"),
+    (tire + lws + quotes + " " + "|" + " " + quotes + \
+     lws + tire, "spec.tire расставляет свои пробелы"),
     # ("'(.){2,}'|''", "В ' должен быть ровно один символ")  not for regex
 ]
 

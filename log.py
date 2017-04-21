@@ -18,7 +18,7 @@ class Log:
         self.__logs.append(open(logfile, 'a', 1, encoding='utf-8'))
 
     def __init__(self, log=None, forceset=False):
-        if not log is None:
+        if log is not None:
             if forceset:
                 self.force_set_file(log)
             else:
@@ -33,8 +33,8 @@ class Log:
         self.writeln(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
     def writeln(self, msg=""):
-        self.write(msg+'\n')
-    
+        self.write(msg + '\n')
+
     def cleandata(self):
         self.__data = str()
 

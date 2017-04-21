@@ -1,7 +1,6 @@
 import clang.cindex
 import re
 import __main__
-# dict_list
 dict_list = {}
 warning = list()
 
@@ -12,22 +11,25 @@ else:
     import chuprotest.settings
     settings = chuprotest.settings
 
+
 class Block:
     children = list()
     childrenNode = list()
     node = None
     vidSet = set()
+
     def __init__(self, node, vids):
         self.vidSet = vids
         self.children = list()
         self.childrenNode = list()
-        self.node = node     
+        self.node = node
         self.find_if(node)
+
     def find_if(self, node):
         kind = None
         try:
             kind = node.kind
-        except:
+        except BaseException:
             pass
             return 1
         if node.kind == clang.cindex.CursorKind.IF_STMT:
@@ -38,17 +40,18 @@ class Block:
             for i in node.get_children():
                 self.find_if(i)
 
-
     def get_children(self):
         return self.children
+
     def __str__(self):
         ret = "{"
         if len(self.get_children()) > 0:
             ret += str(self.get_children()[0])
             for i in self.get_children()[1:]:
-                ret += ';\n' + str(i) 
-        return ret + "}"        
-        
+                ret += ';\n' + str(i)
+        return ret + "}"
+
+
 class If:
     """
     """
@@ -58,7 +61,8 @@ class If:
     BlockElseNode = None
     vidSet = None
     location = []
-    #cond = None
+    # cond = None
+
     def __init__(self, node, vids):
         self.vidSet = vids
         assert node.kind == clang.cindex.CursorKind.IF_STMT
@@ -66,7 +70,7 @@ class If:
         children = list(node.get_children())
         self.cond = get_cond(node)
         self.eval_cond()
-        assert len(children) == 2 or len(children)==3
+        assert len(children) == 2 or len(children) == 3
         self.BlockIf = Block(children[1], self.accept)
         self.BlockIfNode = children[1]
         if len(children) == 3:
@@ -76,7 +80,7 @@ class If:
 
     def get_BlockIf(self):
         return self.BlockIf
-    
+
     def eval_cond(self):
         global vid, warning
         if len(self.vidSet) == 0:
@@ -90,14 +94,14 @@ class If:
         for i in self.vidSet:
             vid = i
             try:
-                #print(i, eval(self.cond))
-                #print(locals(), globals())
+                # print(i, eval(self.cond))
+                # print(locals(), globals())
                 if eval(self.cond, None, {}):
                     accept.add(i)
                     always_False = False
                 else:
                     always_True = False
-            except:
+            except BaseException:
                 parseFail = True
                 accept = set(self.vidSet)
                 reject = set(self.vidSet)
@@ -106,28 +110,31 @@ class If:
                 break
         if not empty:
             if always_True:
-                warning.append(str(self.location[0]-line_shift) + ' ' + self.cond + " always True")
+                warning.append(
+                    str(self.location[0] - line_shift) + ' ' + self.cond + " always True")
             if always_False:
-                warning.append(str(self.location[0]-line_shift) + ' ' + self.cond + " always False")
+                warning.append(
+                    str(self.location[0] - line_shift) + ' ' + self.cond + " always False")
         self.accept = accept
         if parseFail:
             self.reject = reject
         else:
-            self.reject = self.vidSet - accept 
+            self.reject = self.vidSet - accept
         ####
-        #print(self.cond, self.accept, self.reject)
+        # print(self.cond, self.accept, self.reject)
         ####
-    
+
     def get_BlockElse(self):
         return self.BlockElse
-    
+
     def __str__(self):
-        ret = "if"+self.cond
+        ret = "if" + self.cond
         if self.BlockIf is not None:
-            ret +=str(self.get_BlockIf())
+            ret += str(self.get_BlockIf())
         if self.BlockElse is not None:
-            ret +="else" + str(self.get_BlockElse())      
+            ret += "else" + str(self.get_BlockElse())
         return ret
+
 
 def vidin(vidlist):
     if vidlist not in dict_list:
@@ -137,7 +144,8 @@ def vidin(vidlist):
             if vid == i:
                 return True
     return False
-    
+
+
 def get_cond(precond):
     res = str()
     open_brackets = 0
@@ -174,17 +182,20 @@ def get_cond(precond):
             res += "\")"
             in_vidin = False
         else:
-            res+=tmp
+            res += tmp
         if open_brackets == 0:
-            break 
+            break
     return res
+
 
 def parse_list(inputstr):
     global dict_list
     wspace = "(\s*)"
     word = "([a-zA-Z0-9_]+)"
     number = "(\d+)"
-    ulist = "UINT8" + wspace + word + '\[' + wspace + "(\d*)" + wspace + ']' + wspace + '=' + wspace + '{' + wspace + '(' +word + wspace + '(,{0,1})' + wspace + ")*}" 
+    ulist = "UINT8" + wspace + word + '\[' + wspace + "(\d*)" + wspace + ']' + wspace + \
+        '=' + wspace + '{' + wspace + \
+            '(' + word + wspace + '(,{0,1})' + wspace + ")*}"
     # print(list(re.finditer(ulist, inputstr)))
     for i in re.finditer(ulist, inputstr):
         # print(i.group())
@@ -194,9 +205,10 @@ def parse_list(inputstr):
             if len(i.strip()) > 0:
                 vids.add(eval(i.strip()))
         # print(vids)
-        #it`s not good
-        #assert name not in dict_list
+        # it`s not good
+        # assert name not in dict_list
         dict_list[name] = vids
+
 
 def vid_count(inputstr):
     wspace = "(\s*)"
@@ -204,13 +216,13 @@ def vid_count(inputstr):
     number = "(\d+)"
     find = False
     enum1 = "enum" + wspace + "{" + "([^}]*)" + wspace + "vidov" + wspace + "}"
-    enum2 = "vidov" + wspace + '=' + wspace + number 
+    enum2 = "vidov" + wspace + '=' + wspace + number
     enum1_list = list(re.finditer(enum1, inputstr))
     enum2_list = list(re.finditer(enum2, inputstr))
     assert len(enum1_list) + len(enum2_list) <= 1
     # print(enum1_list)
     for i in enum2_list:
-        #print(i.group())
+        # print(i.group())
         return int(i.group().split('=')[1])
     for i in enum1_list:
         vids = str()
@@ -224,21 +236,22 @@ def vid_count(inputstr):
         return len(vids)
     return 1
 
+
 def vid_analysis(generator):
     global line_shift, warning, dict_list
     index = clang.cindex.Index.create()
     dict_list.clear()
     warning.clear()
     filename = "tmpanalis.cpp"
-    analysisfile = open("tmpanalis.cpp",'w',encoding='cp1251')
+    analysisfile = open("tmpanalis.cpp", 'w', encoding='cp1251')
     analysisfile.write("//clang header\n")
     analysisfile.write("#define __GZ3__(a,b,c,d) int main()\n")
     analysisfile.write("//clang header\n")
     line_shift = 3
     inputstr = str()
-    inputfile = open(settings.path_to_gens+generator, 'r', encoding = 'cp1251')
+    inputfile = open(settings.path_to_gens + generator, 'r', encoding='cp1251')
     inputlist = list(inputfile)
-    inputparse = index.parse(settings.path_to_gens+generator)
+    inputparse = index.parse(settings.path_to_gens + generator)
     currentstr = 1
     need_close_brace = False
     need_open_brace = False
@@ -259,39 +272,38 @@ def vid_analysis(generator):
             open_if_brackets += 1
         elif in_if and tmp == ')':
             open_if_brackets -= 1
-            
-        #print(need_open_brace, tmp)    
+
+        # print(need_open_brace, tmp)
         # write
         if need_open_brace:
             if tmp != '{' and tmp != "if":
                 need_open_brace = False
                 need_close_brace = True
-                analysisfile.write("{ "+tmp)
+                analysisfile.write("{ " + tmp)
             else:
                 need_open_brace = False
                 analysisfile.write(tmp)
         elif need_close_brace and tmp == ';':
-            analysisfile.write(tmp+" }")
-            need_close_brace = False 
-        else:   
+            analysisfile.write(tmp + " }")
+            need_close_brace = False
+        else:
             analysisfile.write(tmp)
-        
+
         analysisfile.write(' ')
         # after
         if open_if_brackets == 0 and in_if:
             need_open_brace = True
             in_if = False
-    
+
     for i in inputlist:
-        inputstr += i#.strip()
+        inputstr += i  # .strip()
     analysisfile.close()
-       
-    
+
     tu = index.parse(filename)
     vids = vid_count(inputstr)
-    #print(vids)
+    # print(vids)
     parse_list(inputstr)
     # print(dict_list)
     a = Block(tu.cursor, set(range(vids)))
-    #print(a)
+    # print(a)
     return len(warning) == 0, warning

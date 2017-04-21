@@ -15,9 +15,9 @@ def compilegcc(gen):
     gen_main(gen, 100)
     # compile
     code = os.system("g++-4.9 -std=c++11 -Wextra -Wpedantic -Wall"
-                 "  -fpermissive " + settings.path_to_main + 
-                 " -o " + settings.path_to_prog + " 2> " +
-                 settings.path_to_gcclog)
+                     "  -fpermissive " + settings.path_to_main +
+                     " -o " + settings.path_to_prog + " 2> " +
+                     settings.path_to_gcclog)
     if code:
         settings.log.writeln("ОШИБКА компиляции gcc")
         # ошибки компилятора
@@ -25,7 +25,6 @@ def compilegcc(gen):
         for i in gccinf:
             settings.log.writeln(i)
     else:
-        #settings.log.writeln("Компиляция gcc прошла успешно")
         # предупреждения компилятора
         gccinf = gcclog(gen)
         if len(gccinf) > 0:
@@ -33,25 +32,28 @@ def compilegcc(gen):
         for i in gccinf:
             settings.log.writeln(i)
         os.system("cd " + os.path.dirname(settings.path_to_prog) + " && " +
-                  "timeout 10 ./" + os.path.basename(settings.path_to_prog) + " > " + 
+                  "timeout 10 ./" + os.path.basename(settings.path_to_prog) + " > " +
                   settings.path_to_gztex)
     return code
+
 
 def compilecl(gen):
     gen_main(gen, 100, False, False)  # mvcc + win
     code = os.system("export TESTWIN=\"" + settings.path_to_testwin + "\" && "
-              "export INCLUDE=\"$TESTWIN/VC/include;$TESTWIN/win8sdk/Include/shared/;$TESTWIN/win8sdk/Include/um/;$TESTWIN/win8sdk/Include/winrt/;$TESTWIN/10/Include/10.0.10150.0/ucrt/\" && "
-              "export LIB=\"$TESTWIN/VC/lib;$TESTWIN/win8sdk/Lib/winv6.3/um/x86;$TESTWIN/10/Lib/ucrt/x86\" && "
-              "wine " + settings.path_to_cl + " /EHsc /Wall /W4 z:" + settings.path_to_main + " 2> /dev/null "
-              " | enconv > " + settings.path_to_cllog)
+                     "export INCLUDE=\"$TESTWIN/VC/include;$TESTWIN/win8sdk/Include/shared/;$TESTWIN/win8sdk/Include/um/;$TESTWIN/win8sdk/Include/winrt/;$TESTWIN/10/Include/10.0.10150.0/ucrt/\" && "
+                     "export LIB=\"$TESTWIN/VC/lib;$TESTWIN/win8sdk/Lib/winv6.3/um/x86;$TESTWIN/10/Lib/ucrt/x86\" && "
+                     "wine " + settings.path_to_cl + " /EHsc /Wall /W4 z:" +
+                     settings.path_to_main + " 2> /dev/null "
+                     " | enconv > " + settings.path_to_cllog)
     return code
 
+
 def compile_tex(gen):
-    os.system("enconv -x CP1251 -L ru "+settings.path_to_gztex)
-    tex_success = os.system("export HOME=" + os.path.expanduser("~") + " && " 
+    os.system("enconv -x CP1251 -L ru " + settings.path_to_gztex)
+    tex_success = os.system("export HOME=" + os.path.expanduser("~") + " && "
                             "cd " + os.path.dirname(settings.path_to_prog) + " && " +
                             "timeout 5 pdflatex -output-directory=" + settings.path_to_pdfdir +
-                            " --jobname=" + os.path.basename(gen)[:-2] + " " + settings.path_to_texlib + 
+                            " --jobname=" + os.path.basename(gen)[:-2] + " " + settings.path_to_texlib +
                             " > /dev/null")
     if tex_success == 0:
         settings.log.writeln("Сборка tex прошла успешно")
@@ -60,6 +62,7 @@ def compile_tex(gen):
     os.system("find " + settings.path_to_pdfdir + " \! -name \"*.pdf\""
               " -type f -delete")
     return 1
+
 
 def check_comments(gen):
     patterns = ["//z:", "//s:", "//re:"]
@@ -76,8 +79,10 @@ def check_comments(gen):
 
 def gen_main(matfiz, problems, gcc=True, lnx=True):
     f = open(settings.path_to_main, 'w', encoding='utf-8')
-    f.write("// This is a personal academic project. Dear PVS-Studio, please check it.\n")
-    f.write("// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com\n\n")
+    f.write(
+        "// This is a personal academic project. Dear PVS-Studio, please check it.\n")
+    f.write(
+        "// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com\n\n")
     f.write("// сгенерировано автоматически с помощью compilelib.py\n\n")
     if lnx:
         f.write("#define _LIB_LNXRTL_\n")
@@ -92,7 +97,7 @@ def gen_main(matfiz, problems, gcc=True, lnx=True):
     f.write("__GZ_MAIN__(psa)\n{\n")
     f.write("\tGZ_UTIL_DRAFTEST lim;\n")
     f.write("\tlim.test = 1000;\n")
-    f.write("\tlim.all_min = "+str(problems)+";\n")
+    f.write("\tlim.all_min = " + str(problems) + ";\n")
     f.write("\tlim.vid_min = 10;\n")
     f.write("\tlim.vidopans_min=10;\n")
     f.write("\tlim.vidopans_max=10;\n")
@@ -121,13 +126,15 @@ def find(mat, pattern):
             return True
     return False
 
+
 def cllog(task):
     clog = open(settings.path_to_cllog, 'r', encoding='utf-8')
     clinf = list()
     for i in clog:
         if task in i:
-            clinf.append(i.replace('\n',''))
+            clinf.append(i.replace('\n', ''))
     return clinf
+
 
 def gcclog(task):
     glog = open(settings.path_to_gcclog, "rb")
@@ -139,15 +146,15 @@ def gcclog(task):
               )
     gccinf = list()
     for i in glog:
-        i = str(i).replace("\\xe2","").replace("\\x80","").replace("\\x98","").replace("\\x99","")[2:-3]
+        i = str(i).replace("\\xe2", "").replace("\\x80", "").replace(
+            "\\x98", "").replace("\\x99", "")[2:-3]
         for kw in good:
             if kw in i:
 
                 for bw in ignore:
-                    if bw in i.replace('\'',''):
+                    if bw in i.replace('\'', ''):
                         break
                 else:
                     gccinf.append(i)
                 break
     return gccinf
-    
