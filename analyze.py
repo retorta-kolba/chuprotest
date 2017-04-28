@@ -6,17 +6,30 @@ if __name__ != '__main__':
     import chuprotest.settings
     settings = chuprotest.settings
 
+def genpvscfg():
+    cfg = open(settings.path_to_pvscfg, "w")
+    cfg.write("exclude-path = /usr/include/\n")
+    cfg.write("platform = linux64\n")
+    cfg.write("preprocessor =gcc\n")
+    cfg.write("analysis-mode=0\n")
+    cfg.write("language = C++\n")
+    cfg.write("output-file = " + settings.path_to_pvslog + "\n")
+    cfg.write("cl-params = -c -Wall -fpermissive -std=c++11 " + settings.path_to_main + "\n")
+    cfg.write("source-file = " + settings.path_to_main + "\n")
+    cfg.write("sourcetree-root = " + settings.path_to_test + "\n")
 
 def pvs():
-    success = True
+    genpvscfg()
     errors = list()
-    if os.system("pvs-studio"):
+    code = os.system("pvs-studio --cfg " + settings.path_to_pvscfg)
+    if code:
         settings.log.writeln("PVS-Studio analis fail")
     else:
         os.system(
-            "plog-converter -a \"GA;OP;CS\" -d V2008,V525 -t tasklist -o pvs.tasks pvs.log > /dev/null")
-        os.system("rm pvs.log")
-        pvstasks = open("pvs.tasks", "r", encoding="cp1251")
+            "plog-converter -a \"GA;OP;CS\" -d V2008,V525 -t tasklist -o " + 
+            settings.path_to_pvstasks + " " + settings.path_to_pvslog + " > /dev/null")
+        os.system("rm " + settings.path_to_pvslog)
+        pvstasks = open(settings.path_to_pvstasks, "r", encoding="cp1251")
         ignorepvs = (
             "lib/chupro.h",
             "visualcpp, clang, gcc, bcc, bcc_clang64",
@@ -29,9 +42,8 @@ def pvs():
                 if ignore in i:
                     break
             else:
-                success = False
                 errors.append(i.strip())
-    return success, errors
+    return errors
 
 
 def analyse(gen):

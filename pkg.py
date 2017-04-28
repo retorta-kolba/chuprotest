@@ -23,7 +23,7 @@ def password(prog):
             return i.split('=')[1].strip()
     else:
         passfile.close()
-        raise RuntimeError("Проблеы с паролем: пароль не найден.")
+        raise RuntimeError("Проблемы с паролем: пароль не найден.")
 
 
 def unrar(path_to_arx, prog):
@@ -95,7 +95,14 @@ def testgen(gen):
                 i = i.strip()
                 if len(i) > 0:
                     settings.log.writeln(i)
-
+    
+    if settings.make_pvs:
+        pvs_error = analyse.pvs()
+        if pvs_error:
+            settings.log.writeln("Есть ошибки pvs:")
+            for i in pvs_error:
+                settings.log.writeln(i)
+    
     if settings.make_comments:
         findcomment, info = compilelib.check_comments(gen)
         if findcomment:
