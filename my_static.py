@@ -121,7 +121,7 @@ class If:
         else:
             self.reject = self.vidSet - accept
         ####
-        # print(self.cond, self.accept, self.reject)
+        #print(self.cond, self.accept, self.reject)
         ####
 
     def get_BlockElse(self):
@@ -232,7 +232,8 @@ def vid_count(inputstr):
         vids = vids.split(',')[:-1]
         # print(vids)
         for j in range(len(vids)):
-            globals()[vids[j].strip()] = j
+            if vids[j].strip() not in globals():
+                globals()[vids[j].strip()] = j
         return len(vids)
     return 1
 
@@ -242,16 +243,16 @@ def vid_analysis(generator):
     index = clang.cindex.Index.create()
     dict_list.clear()
     warning.clear()
-    filename = "tmpanalis.cpp"
-    analysisfile = open("tmpanalis.cpp", 'w', encoding='cp1251')
+    filename = settings.path_to_tmpprep
+    analysisfile = open(settings.path_to_tmpprep, 'w', encoding='cp1251')
     analysisfile.write("//clang header\n")
     analysisfile.write("#define __GZ3__(a,b,c,d) int main()\n")
     analysisfile.write("//clang header\n")
     line_shift = 3
     inputstr = str()
-    inputfile = open(settings.path_to_gens + generator, 'r', encoding='cp1251')
+    inputfile = open(generator, 'r', encoding='cp1251')
     inputlist = list(inputfile)
-    inputparse = index.parse(settings.path_to_gens + generator)
+    inputparse = index.parse(generator)
     currentstr = 1
     need_close_brace = False
     need_open_brace = False
@@ -262,6 +263,9 @@ def vid_analysis(generator):
         analysisfile.write('\n' * (i.location.line - currentstr))
         currentstr += (i.location.line - currentstr)
         tmp = i.spelling.decode("cp1251")
+        # запишем
+        
+        
         if tmp == "if":
             prev_if = True
         elif prev_if and tmp == '(':
@@ -273,27 +277,29 @@ def vid_analysis(generator):
         elif in_if and tmp == ')':
             open_if_brackets -= 1
 
-        # print(need_open_brace, tmp)
+        # print(need_open_brace, in_if, tmp)
         # write
         if need_open_brace:
             if tmp != '{' and tmp != "if":
                 need_open_brace = False
                 need_close_brace = True
-                analysisfile.write("{ " + tmp)
+                analysisfile.write("{ ")
             else:
                 need_open_brace = False
-                analysisfile.write(tmp)
-        elif need_close_brace and tmp == ';':
-            analysisfile.write(tmp + " }")
-            need_close_brace = False
-        else:
-            analysisfile.write(tmp)
 
-        analysisfile.write(' ')
-        # after
+            
+        analysisfile.write(tmp)
+        
+        if need_close_brace and tmp == ';':
+            analysisfile.write(" }")
+            need_close_brace = False
+        
+                # after
         if open_if_brackets == 0 and in_if:
             need_open_brace = True
             in_if = False
+        analysisfile.write(' ')
+
 
     for i in inputlist:
         inputstr += i  # .strip()
@@ -306,4 +312,4 @@ def vid_analysis(generator):
     # print(dict_list)
     a = Block(tu.cursor, set(range(vids)))
     # print(a)
-    return len(warning) == 0, warning
+    return warning

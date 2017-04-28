@@ -7,6 +7,7 @@ if __name__ != '__main__':
     import chuprotest.compilelib as compilelib
     import chuprotest.analyze as analyse
     import chuprotest.helper as helper
+    import chuprotest.my_static as my_static
 
 # TODO: my_error
 
@@ -103,13 +104,23 @@ def testgen(gen):
             for i in pvs_error:
                 settings.log.writeln(i)
     
+    if settings.make_analyse:
+        analyse_success = analyse.analyse(gen)
+    try:
+        if settings.make_static:
+            my_static_error = my_static.vid_analysis(gen)
+            if my_static_error:
+                settings.log.writeln("Есть ошибки при проверке выражений:")
+                for i in my_static_error:
+                    settings.log.writeln(i)
+    except Exception:
+        settings.log.writeln("неизвестная ошибка при проверке выражений")
+    
     if settings.make_comments:
         findcomment, info = compilelib.check_comments(gen)
         if findcomment:
             settings.log.writeln(info)
 
-    if settings.make_analyse:
-        analyse_success = analyse.analyse(gen)
 
 
 def test():
@@ -130,6 +141,7 @@ def test():
                 testgen(path_to_gen)
             except BaseException:
                 settings.log.writeln("произошла ошибка при проверке " + i)
+                raise
         else:
             settings.log.writeln(i + " проигнорировано")
     return tasks
