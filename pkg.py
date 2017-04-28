@@ -141,7 +141,6 @@ def test():
                 testgen(path_to_gen)
             except BaseException:
                 settings.log.writeln("произошла ошибка при проверке " + i)
-                raise
         else:
             settings.log.writeln(i + " проигнорировано")
     return tasks
