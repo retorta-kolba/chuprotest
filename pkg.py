@@ -66,13 +66,14 @@ def testgen(gen):
     settings.log.writeln(os.path.basename(gen))
     settings.log.write_time()
     compile_success = True
-
+    genname = os.path.basename(gen)
+    
     if settings.make_compilecl:
         cl_error = compilelib.compilecl(gen)
         if cl_error:
             compile_success = False
             settings.log.writeln("ОШИБКА компиляции msvs")
-        out = compilelib.cllog(gen)
+        out = compilelib.cllog(genname)
         if len(out) > 0:
             settings.log.writeln("ПРЕДУПРЕЖДЕНИЯ msvs:")
             for i in out:
