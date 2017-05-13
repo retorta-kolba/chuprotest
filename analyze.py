@@ -26,7 +26,7 @@ def pvs():
         settings.log.writeln("PVS-Studio analis fail")
     else:
         os.system(
-            "plog-converter -a \"GA;OP;CS\" -d V2008,V525 -t tasklist -o " + 
+            "plog-converter -a \"GA;OP;CS\" -d V2008,V525,V807 -t tasklist -o " + 
             settings.path_to_pvstasks + " " + settings.path_to_pvslog + " > /dev/null")
         os.system("rm " + settings.path_to_pvslog)
         pvstasks = open(settings.path_to_pvstasks, "r", encoding="cp1251")
