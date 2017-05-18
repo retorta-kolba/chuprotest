@@ -194,11 +194,10 @@ def parse_list(inputstr):
     word = "([a-zA-Z0-9_]+)"
     number = "(\d+)"
     ulist = "UINT8" + wspace + word + '\[' + wspace + "(\d*)" + wspace + ']' + wspace + \
-        '=' + wspace + '{' + wspace + \
+        '(=)*' + wspace + '{' + wspace + \
             '(' + word + wspace + '(,{0,1})' + wspace + ")*}"
     # print(list(re.finditer(ulist, inputstr)))
     for i in re.finditer(ulist, inputstr):
-        # print(i.group())
         name = i.group().split('[')[0].split()[-1]
         vids = set()
         for i in i.group().split('{')[1].split('}')[0].split(','):
