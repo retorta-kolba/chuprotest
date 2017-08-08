@@ -229,9 +229,9 @@ def vid_count(inputstr):
             vids += j.split('//')[0].strip()
         # print(vids)
         vids = vids.split(',')[:-1]
-        # print(vids)
         for j in range(len(vids)):
-            if vids[j].strip() not in globals():
+            if vids[j].strip() not in globals() and \
+               vids[j].strip() not in globals()["__builtins__"]:
                 globals()[vids[j].strip()] = j
         return len(vids)
     return 1

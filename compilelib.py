@@ -54,7 +54,7 @@ def compile_tex(gen):
     os.system("enconv -x CP1251 -L ru " + settings.path_to_gztex)
     tex_success = os.system("export HOME=" + os.path.expanduser("~") + " && "
                             "cd " + os.path.dirname(settings.path_to_prog) + " && " +
-                            "timeout 5 pdflatex -output-directory=" + settings.path_to_pdfdir +
+                            "timeout 10 pdflatex -output-directory=" + settings.path_to_pdfdir +
                             " --jobname=" + os.path.basename(gen)[:-2] + " " + settings.path_to_texlib +
                             " > /dev/null")
     if tex_success == 0:
@@ -67,7 +67,7 @@ def compile_tex(gen):
 
 
 def check_comments(gen):
-    patterns = ["//z:", "//s:", "//re:"]
+    patterns = ["//z:", "//s:", "//re:", "TODO", "todo"]
     findcomment = False
     info = str()
     for i in patterns:
