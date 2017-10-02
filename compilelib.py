@@ -86,6 +86,7 @@ def gen_main(matfiz, problems, gcc=True, lnx=True):
     f.write(
         "// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com\n\n")
     f.write("// сгенерировано автоматически с помощью compilelib.py\n\n")
+    f.write("#define _PRINT_STDOUT_CODE_WIN_\n")
     if lnx:
         f.write("#define _LIB_LNXRTL_\n")
     else:
