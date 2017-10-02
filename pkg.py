@@ -88,8 +88,8 @@ def testgen(gen):
         settings.log.writeln("Компиляция прошла успешно")
 
     if settings.make_compilegcc and not gcc_error and settings.make_tex:
-        tex_success = compilelib.compile_tex(gen)
-        if tex_success:
+        tex_error = compilelib.compile_tex(gen)
+        if not tex_error:
             error_tex, errors_tex_list = compilelib.check_tex()
             if error_tex:
                 settings.log.writeln("Есть ОШИБКИ tex:")

@@ -63,7 +63,7 @@ def compile_tex(gen):
         settings.log.writeln("Ошибки в сборке тех")
     os.system("find " + settings.path_to_pdfdir + " \! -name \"*.pdf\""
               " -type f -delete")
-    return 1
+    return tex_success
 
 
 def check_comments(gen):
